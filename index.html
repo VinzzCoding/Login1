@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <title>Project1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+        <a href="https://www.google.com" class="button" id="loginButton">Login</a>
+        </div>
+    </div>
+    <script>
+        const loginButton = document.getElementById('loginButton');
+        const box = document.querySelector('.box');
+
+        loginButton.addEventListener('mouseenter', () => {
+            box.classList.remove('ripple');
+            void box.offsetWidth;
+            box.classList.add('ripple');
+        });
+
+        function playClickSound() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContext) {
+                return;
+            }
+
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const startTime = audioContext.currentTime;
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(520, startTime);
+            oscillator.frequency.exponentialRampToValueAtTime(180, startTime + 0.18);
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.16, startTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.2);
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.2);
+            oscillator.addEventListener('ended', () => audioContext.close());
+        }
+
+        loginButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            playClickSound();
+            box.classList.remove('ripple');
+            box.classList.add('pressing');
+            setTimeout(() => {
+                window.location.href = loginButton.href;
+            }, 650);
+        });
+        box.addEventListener('animationend', () => box.classList.remove('ripple'));
+    </script>
+</body>
